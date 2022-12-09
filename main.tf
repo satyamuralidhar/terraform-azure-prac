@@ -135,3 +135,30 @@ resource "azurerm_linux_virtual_machine" "myvm" {
     azurerm_virtual_network
   ]
 }
+/* manage disk creation */
+resource "azurerm_managed_disk" "md" {
+  name = format("%s-%s",azurerm_linux_virtual_machine.myvm.name,"disk")
+  location = azurerm_resource_group.myrsg.location
+  resource_group_name = azurerm_resource_group.myrsg.name
+  storage_account_type = "Standard_LRS"
+  create_option = "Empty"
+  disk_size_gb = "200"
+  tags = local.tags
+  depends_on = [
+    azurerm_linux_virtual_machine.myvm
+  ]
+
+}
+
+/* managed disk attachment */
+
+resource "azurerm_virtual_machine_data_disk_attachment" "diskattach" {
+  managed_disk_id = azurerm_managed_disk.md.id
+  virtual_machine_id = azurerm_linux_virtual_machine.myvm.id
+  lun = "10"
+  caching = "ReadWrite"
+  dependsdepends_on = [
+    azurerm_linux_virtual_machine.myvm,
+    azurerm_managed_disk.md
+  ]  
+}
