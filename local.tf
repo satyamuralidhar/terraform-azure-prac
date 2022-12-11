@@ -1,6 +1,6 @@
 locals {
   tags = {
-    "Env" = "Dev",
+    "Env"          = "Dev",
     "Subscription" = "Development"
   }
 }
